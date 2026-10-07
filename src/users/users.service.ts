@@ -3,8 +3,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectDrizzle } from '@nestjs/drizzle';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { users,type User,type NewUser } from '../db/schema';
+import { users,type User } from '../db/schema';
 import {eq} from 'drizzle-orm';
+import {SafeUser} from './types/safeuser'
+
 @Injectable()
 export class UsersService {
   constructor(@InjectDrizzle() private readonly db: NodePgDatabase) {}
@@ -42,8 +44,9 @@ export class UsersService {
   async updatePassword(id: string, password: string) {
     return await this.db.update(users).set({ password }).where(eq(users.id, id)).returning();
   }
-  safeUser(user: User){
+  safeUser(user: User): SafeUser{
     const { password, ...safeUser } = user;
+    
     return safeUser;
   }
 }
